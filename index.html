@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Permanent QR Code Generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            margin: 20px 0;
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            text-align: center;
+            font-size: 2.5em;
+        }
+        
+        .input-section {
+            margin-bottom: 30px;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 16px 40px;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .qr-section {
+            text-align: center;
+            margin-top: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            display: none;
+        }
+        
+        #qrcode {
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        canvas {
+            border-radius: 10px;
+        }
+        
+        .permanent-info {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e3f2fd;
+            border-radius: 10px;
+            border-left: 5px solid #2196f3;
+        }
+        
+        .qr-list {
+            margin-top: 40px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        
+        .qr-item {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .qr-item img {
+            width: 80px;
+            height: 80px;
+            border-radius: 5px;
+        }
+        
+        .delete-btn {
+            background: #ff4757;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        .controls button {
+            width: auto;
+            flex: 1;
+        }
+        
+        .short-url {
+            word-break: break-all;
+            background: #f5f5f5;
+            padding: 10px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-family: monospace;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        
+        .share-buttons button {
+            width: auto;
+            flex: 1;
+            max-width: 200px;
+        }
+        
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔗 Permanent QR Code Generator</h1>
+        
+        <div class="input-section">
+            <p>Enter any URL or text (it will be saved permanently):</p>
+            <input type="text" id="urlInput" placeholder="https://example.com or any text here...">
+            <textarea id="textInput" placeholder="Or enter longer text here..."></textarea>
+            
+            <button onclick="generateQR()">✨ Generate Permanent QR Code</button>
+        </div>
+        
+        <div class="qr-section" id="qrSection">
+            <h3>✅ Your Permanent QR Code:</h3>
+            <div id="qrcode"></div>
+            
+            <div class="permanent-info">
+                <strong>🔒 This QR code is permanent:</strong>
+                <p>Bookmark this page or save the URL below. The QR code will always work from this URL.</p>
+                <div class="short-url" id="permanentUrl"></div>
+            </div>
+            
+            <div class="controls">
+                <button onclick="downloadQR()">💾 Download PNG</button>
+                <button onclick="shareQR()">📤 Share</button>
+                <button onclick="printQR()">🖨️ Print</button>
+            </div>
+        </div>
+        
+        <div class="qr-list" id="qrList">
+            <h3>📋 Your Generated QR Codes:</h3>
+            <div id="savedQRCodes"></div>
+        </div>
+    </div>
+
+    <!-- Load QRCode.js from CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
+    
+    <script>
+        // Load saved QR codes from localStorage
+        let savedCodes = JSON.parse(localStorage.getItem('permanentQRCodes') || '[]');
+        
+        function generateQR() {
+            let url = document.getElementById('urlInput').value.trim();
+            let text = document.getElementById('textInput').value.trim();
+            
+            let data = url || text;
+            
+            if (!data) {
+                alert('Please enter some text or URL');
+                return;
+            }
+            
+            // Generate unique ID for this QR code
+            let id = 'qr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            
+            // Create QR code
+            let qrElement = document.getElementById('qrcode');
+            qrElement.innerHTML = '';
+            
+            QRCode.toCanvas(qrElement, data, {
+                width: 256,
+                margin: 2,
+                color: {
+                    dark: '#000000',
+                    light: '#FFFFFF'
+                }
+            }, function(error) {
+                if (error) {
+                    console.error(error);
+                    return;
+                }
+                
+                // Save to localStorage
+                let qrData = {
+                    id: id,
+                    data: data,
+                    timestamp: new Date().toISOString(),
+                    type: url ? 'url' : 'text'
+                };
+                
+                savedCodes.unshift(qrData); // Add to beginning
+                localStorage.setItem('permanentQRCodes', JSON.stringify(savedCodes));
+                
+                // Update UI
+                showQR(qrData);
+                updateQRList();
+                
+                // Show QR section
+                document.getElementById('qrSection').style.display = 'block';
+                
+                // Generate permanent URL (uses URL hash)
+                let permanentUrl = window.location.origin + window.location.pathname + '#' + id;
+                document.getElementById('permanentUrl').textContent = permanentUrl;
+                
+                // Clear inputs
+                document.getElementById('urlInput').value = '';
+                document.getElementById('textInput').value = '';
+            });
+        }
+        
+        function showQR(qrData) {
+            let qrElement = document.getElementById('qrcode');
+            qrElement.innerHTML = '';
+            
+            QRCode.toCanvas(qrElement, qrData.data, {
+                width: 256,
+                margin: 2
+            });
+            
+            // Update permanent URL
+            let permanentUrl = window.location.origin + window.location.pathname + '#' + qrData.id;
+            document.getElementById('permanentUrl').textContent = permanentUrl;
+            
+            document.getElementById('qrSection').style.display = 'block';
+        }
+        
+        function updateQRList() {
+            let container = document.getElementById('savedQRCodes');
+            container.innerHTML = '';
+            
+            if (savedCodes.length === 0) {
+                container.innerHTML = '<p>No QR codes generated yet.</p>';
+                return;
+            }
+            
+            savedCodes.forEach(qrData => {
+                let div = document.createElement('div');
+                div.className = 'qr-item';
+                div.id = 'qr_' + qrData.id;
+                
+                // Create mini QR code
+                let canvas = document.createElement('canvas');
+                QRCode.toCanvas(canvas, qrData.data.substring(0, 100), {
+                    width: 80,
+                    margin: 1
+                });
+                
+                div.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        ${canvas.outerHTML}
+                        <div>
+                            <strong>${qrData.type === 'url' ? '🔗 URL' : '📝 Text'}</strong><br>
+                            <small>${qrData.data.substring(0, 50)}${qrData.data.length > 50 ? '...' : ''}</small><br>
+                            <small style="color: #666;">${new Date(qrData.timestamp).toLocaleDateString()}</small>
+                        </div>
+                    </div>
+                    <div>
+                        <button class="delete-btn" onclick="deleteQR('${qrData.id}')">🗑️ Delete</button>
+                    </div>
+                `;
+                
+                container.appendChild(div);
+            });
+        }
+        
+        function deleteQR(id) {
+            savedCodes = savedCodes.filter(qr => qr.id !== id);
+            localStorage.setItem('permanentQRCodes', JSON.stringify(savedCodes));
+            updateQRList();
+            
+            // If we're viewing this QR code, hide the QR section
+            if (window.location.hash === '#' + id) {
+                window.location.hash = '';
+                document.getElementById('qrSection').style.display = 'none';
+            }
+        }
+        
+        function downloadQR() {
+            let canvas = document.querySelector('#qrcode canvas');
+            let link = document.createElement('a');
+            link.download = 'permanent-qr-code-' + Date.now() + '.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+        
+        function shareQR() {
+            let canvas = document.querySelector('#qrcode canvas');
+            canvas.toBlob(blob => {
+                if (navigator.share) {
+                    navigator.share({
+                        title: 'My Permanent QR Code',
+                        text: 'Scan this QR code',
+                        files: [new File([blob], 'qr-code.png', { type: 'image/png' })]
+                    });
+                } else {
+                    // Fallback for browsers that don't support Web Share API
+                    let link = document.createElement('a');
+                    link.href = canvas.toDataURL();
+                    link.download = 'qr-code.png';
+                    link.click();
+                }
+            });
+        }
+        
+        function printQR() {
+            let canvas = document.querySelector('#qrcode canvas');
+            let printWindow = window.open('', '_blank');
+            printWindow.document.write(`
+                <html>
+                    <head><title>Print QR Code</title></head>
+                    <body style="text-align: center; padding: 50px;">
+                        <img src="${canvas.toDataURL()}" style="max-width: 100%;">
+                        <script>
+                            window.onload = function() {
+                                window.print();
+                                setTimeout(() => window.close(), 1000);
+                            }
+                        <\/script>
+                    </body>
+                </html>
+            `);
+            printWindow.document.close();
+        }
+        
+        // Load QR code from URL hash on page load
+        window.addEventListener('load', function() {
+            updateQRList();
+            
+            // Check if there's a QR code ID in the URL hash
+            let hash = window.location.hash.substring(1);
+            if (hash && hash.startsWith('qr_')) {
+                let qrId = hash;
+                let qrData = savedCodes.find(qr => qr.id === qrId);
+                if (qrData) {
+                    showQR(qrData);
+                }
+            }
+        });
+        
+        // Update URL when generating new QR codes
+        window.addEventListener('hashchange', function() {
+            let hash = window.location.hash.substring(1);
+            if (hash && hash.startsWith('qr_')) {
+                let qrData = savedCodes.find(qr => qr.id === hash);
+                if (qrData) {
+                    showQR(qrData);
+                }
+            }
+        });
+    </script>
+</body>
+</html>
