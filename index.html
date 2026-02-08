@@ -3,398 +3,401 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Permanent QR Code Generator</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-        }
-        
-        .container {
-            background: white;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            margin: 20px 0;
-        }
-        
-        h1 {
-            color: #333;
-            margin-bottom: 30px;
-            text-align: center;
-            font-size: 2.5em;
-        }
-        
-        .input-section {
-            margin-bottom: 30px;
-        }
-        
-        input, textarea {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-        
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        
-        button {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            color: white;
-            border: none;
-            padding: 16px 40px;
-            border-radius: 10px;
-            font-size: 18px;
-            cursor: pointer;
-            width: 100%;
-            margin: 10px 0;
-            transition: transform 0.2s, box-shadow 0.2s;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        button:active {
-            transform: translateY(0);
-        }
-        
-        .qr-section {
-            text-align: center;
-            margin-top: 30px;
-            padding: 20px;
-            background: #f8f9fa;
-            border-radius: 10px;
-            display: none;
-        }
-        
-        #qrcode {
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 10px;
-            display: inline-block;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-        }
-        
-        canvas {
-            border-radius: 10px;
-        }
-        
-        .permanent-info {
-            margin-top: 20px;
-            padding: 15px;
-            background: #e3f2fd;
-            border-radius: 10px;
-            border-left: 5px solid #2196f3;
-        }
-        
-        .qr-list {
-            margin-top: 40px;
-            border-top: 2px solid #eee;
-            padding-top: 20px;
-        }
-        
-        .qr-item {
-            background: white;
-            border: 2px solid #e0e0e0;
-            border-radius: 10px;
-            padding: 15px;
-            margin: 10px 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        
-        .qr-item img {
-            width: 80px;
-            height: 80px;
-            border-radius: 5px;
-        }
-        
-        .delete-btn {
-            background: #ff4757;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .controls button {
-            width: auto;
-            flex: 1;
-        }
-        
-        .short-url {
-            word-break: break-all;
-            background: #f5f5f5;
-            padding: 10px;
-            border-radius: 5px;
-            margin: 10px 0;
-            font-family: monospace;
-        }
-        
-        .share-buttons {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-        
-        .share-buttons button {
-            width: auto;
-            flex: 1;
-            max-width: 200px;
-        }
-        
-        @media (max-width: 600px) {
-            body {
-                padding: 10px;
-            }
-            
-            .container {
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 1.8em;
-            }
-        }
-    </style>
+    <title>QRPro | Professional QR Code & URL Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔗</text></svg>">
 </head>
 <body>
     <div class="container">
-        <h1>🔗 Permanent QR Code Generator</h1>
-        
-        <div class="input-section">
-            <p>Enter any URL or text (it will be saved permanently):</p>
-            <input type="text" id="urlInput" placeholder="https://example.com or any text here...">
-            <textarea id="textInput" placeholder="Or enter longer text here..."></textarea>
-            
-            <button onclick="generateQR()">✨ Generate Permanent QR Code</button>
-        </div>
-        
-        <div class="qr-section" id="qrSection">
-            <h3>✅ Your Permanent QR Code:</h3>
-            <div id="qrcode"></div>
-            
-            <div class="permanent-info">
-                <strong>🔒 This QR code is permanent:</strong>
-                <p>Bookmark this page or save the URL below. The QR code will always work from this URL.</p>
-                <div class="short-url" id="permanentUrl"></div>
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-qrcode"></i>
+                <h1>QR<span class="logo-highlight">Pro</span></h1>
+                <span class="tagline">Professional QR & URL Manager</span>
             </div>
-            
-            <div class="controls">
-                <button onclick="downloadQR()">💾 Download PNG</button>
-                <button onclick="shareQR()">📤 Share</button>
-                <button onclick="printQR()">🖨️ Print</button>
+            <div class="stats">
+                <div class="stat">
+                    <i class="fas fa-link"></i>
+                    <span id="totalLinks">0</span>
+                    <small>URLs</small>
+                </div>
+                <div class="stat">
+                    <i class="fas fa-qrcode"></i>
+                    <span id="totalQRs">0</span>
+                    <small>QR Codes</small>
+                </div>
             </div>
-        </div>
-        
-        <div class="qr-list" id="qrList">
-            <h3>📋 Your Generated QR Codes:</h3>
-            <div id="savedQRCodes"></div>
-        </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Generator Panel -->
+            <section class="card generator-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-plus-circle"></i> Create New</h2>
+                    <div class="tab-switcher">
+                        <button class="tab-btn active" data-tab="url">URL Shortener</button>
+                        <button class="tab-btn" data-tab="qr">QR Code</button>
+                        <button class="tab-btn" data-tab="text">Text QR</button>
+                    </div>
+                </div>
+
+                <!-- URL Shortener Tab -->
+                <div class="tab-content active" id="url-tab">
+                    <div class="input-group">
+                        <label for="originalUrl"><i class="fas fa-link"></i> Enter Long URL</label>
+                        <input type="url" id="originalUrl" placeholder="https://example.com/very-long-url-path" required>
+                        <small class="hint">We'll create a short, permanent link for this URL</small>
+                    </div>
+                    
+                    <div class="custom-short">
+                        <div class="input-group">
+                            <label for="customSlug"><i class="fas fa-pen"></i> Custom Short Code (Optional)</label>
+                            <div class="input-with-prefix">
+                                <span class="prefix">qrpro.link/</span>
+                                <input type="text" id="customSlug" placeholder="my-page" pattern="[a-zA-Z0-9-_]+">
+                            </div>
+                            <small class="hint">Use letters, numbers, hyphens, or underscores</small>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary btn-generate" onclick="shortenUrl()">
+                        <i class="fas fa-magic"></i> Create Short URL
+                    </button>
+                </div>
+
+                <!-- QR Code Tab -->
+                <div class="tab-content" id="qr-tab">
+                    <div class="input-group">
+                        <label for="qrUrl"><i class="fas fa-qrcode"></i> URL for QR Code</label>
+                        <input type="url" id="qrUrl" placeholder="https://example.com" required>
+                    </div>
+                    
+                    <div class="qr-options">
+                        <label>Color Scheme</label>
+                        <div class="color-options">
+                            <div class="color-option active" data-color="#000000" data-bg="#FFFFFF">
+                                <div class="color-preview" style="background: linear-gradient(45deg, #000 50%, #fff 50%);"></div>
+                                <span>Classic</span>
+                            </div>
+                            <div class="color-option" data-color="#2D3748" data-bg="#F7FAFC">
+                                <div class="color-preview" style="background: linear-gradient(45deg, #2D3748 50%, #F7FAFC 50%);"></div>
+                                <span>Modern</span>
+                            </div>
+                            <div class="color-option" data-color="#2B6CB0" data-bg="#EBF8FF">
+                                <div class="color-preview" style="background: linear-gradient(45deg, #2B6CB0 50%, #EBF8FF 50%);"></div>
+                                <span>Blue</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-primary btn-generate" onclick="generateQR()">
+                        <i class="fas fa-bolt"></i> Generate QR Code
+                    </button>
+                </div>
+
+                <!-- Text QR Tab -->
+                <div class="tab-content" id="text-tab">
+                    <div class="input-group">
+                        <label for="qrText"><i class="fas fa-font"></i> Text Content</label>
+                        <textarea id="qrText" placeholder="Enter text, contact info, message, or any content..." rows="4"></textarea>
+                    </div>
+                    
+                    <button class="btn-primary btn-generate" onclick="generateTextQR()">
+                        <i class="fas fa-qrcode"></i> Create Text QR
+                    </button>
+                </div>
+            </section>
+
+            <!-- Results Panel -->
+            <section class="card results-card" id="resultsSection" style="display: none;">
+                <div class="card-header">
+                    <h2><i class="fas fa-check-circle"></i> Created Successfully!</h2>
+                    <button class="btn-icon" onclick="closeResults()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="result-content">
+                    <div class="qr-display">
+                        <canvas id="qrCanvas"></canvas>
+                        <div class="qr-actions">
+                            <button class="btn-action" onclick="downloadQR()">
+                                <i class="fas fa-download"></i> Download
+                            </button>
+                            <button class="btn-action" onclick="shareQR()">
+                                <i class="fas fa-share"></i> Share
+                            </button>
+                            <button class="btn-action" onclick="printQR()">
+                                <i class="fas fa-print"></i> Print
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="url-result">
+                        <label>Short URL</label>
+                        <div class="url-display">
+                            <input type="text" id="shortUrlDisplay" readonly>
+                            <button class="btn-copy" onclick="copyToClipboard('shortUrlDisplay')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        
+                        <label>Original URL</label>
+                        <div class="url-display">
+                            <input type="text" id="originalUrlDisplay" readonly>
+                            <button class="btn-copy" onclick="copyToClipboard('originalUrlDisplay')">
+                                <i class="fas fa-copy"></i> Copy
+                            </button>
+                        </div>
+                        
+                        <div class="result-meta">
+                            <span><i class="far fa-calendar"></i> Created: <span id="createdDate">Just now</span></span>
+                            <span><i class="fas fa-eye"></i> Views: <span id="viewCount">0</span></span>
+                            <span><i class="fas fa-hashtag"></i> ID: <span id="itemId">-</span></span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- History Panel -->
+            <section class="card history-card">
+                <div class="card-header">
+                    <h2><i class="fas fa-history"></i> My Links & QR Codes</h2>
+                    <div class="history-filter">
+                        <select id="filterType" onchange="filterHistory()">
+                            <option value="all">All Items</option>
+                            <option value="url">Short URLs</option>
+                            <option value="qr">QR Codes</option>
+                        </select>
+                        <button class="btn-icon" onclick="exportData()" title="Export All">
+                            <i class="fas fa-file-export"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="history-list" id="historyList">
+                    <!-- Items will be loaded here -->
+                    <div class="empty-state">
+                        <i class="fas fa-link-slash"></i>
+                        <h3>No links or QR codes yet</h3>
+                        <p>Create your first short URL or QR code above</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <p>QRPro &copy; 2024 | All data stored locally in your browser | <a href="#" onclick="clearAllData()">Clear All Data</a></p>
+            <p class="footer-hint">🔒 Your data is private and never leaves your device</p>
+        </footer>
     </div>
 
-    <!-- Load QRCode.js from CDN -->
+    <!-- QR Code Library -->
     <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.3/build/qrcode.min.js"></script>
-    
+    <!-- Local Storage Manager -->
+    <script src="qr-storage.js"></script>
+    <!-- Main App Logic -->
     <script>
-        // Load saved QR codes from localStorage
-        let savedCodes = JSON.parse(localStorage.getItem('permanentQRCodes') || '[]');
+        // DOM Elements
+        let currentColor = '#000000';
+        let currentBg = '#FFFFFF';
         
-        function generateQR() {
-            let url = document.getElementById('urlInput').value.trim();
-            let text = document.getElementById('textInput').value.trim();
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup tabs
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const tab = btn.dataset.tab;
+                    switchTab(tab);
+                });
+            });
             
-            let data = url || text;
+            // Setup color options
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', () => {
+                    document.querySelectorAll('.color-option').forEach(o => o.classList.remove('active'));
+                    option.classList.add('active');
+                    currentColor = option.dataset.color;
+                    currentBg = option.dataset.bg;
+                });
+            });
             
-            if (!data) {
-                alert('Please enter some text or URL');
+            // Load existing data
+            updateStats();
+            loadHistory();
+        });
+        
+        // Tab Switching
+        function switchTab(tab) {
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            
+            document.querySelector(`[data-tab="${tab}"]`).classList.add('active');
+            document.getElementById(`${tab}-tab`).classList.add('active');
+        }
+        
+        // URL Shortener
+        function shortenUrl() {
+            const originalUrl = document.getElementById('originalUrl').value;
+            const customSlug = document.getElementById('customSlug').value;
+            
+            if (!originalUrl) {
+                showError('Please enter a URL');
                 return;
             }
             
-            // Generate unique ID for this QR code
-            let id = 'qr_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            // Generate short code
+            let shortCode = customSlug || generateShortCode();
+            const shortUrl = `qrpro.link/${shortCode}`;
             
-            // Create QR code
-            let qrElement = document.getElementById('qrcode');
-            qrElement.innerHTML = '';
+            // Save to storage
+            const item = StorageManager.addURL(originalUrl, shortUrl, shortCode);
             
-            QRCode.toCanvas(qrElement, data, {
-                width: 256,
-                margin: 2,
+            // Display result
+            showResult(item, shortUrl);
+            
+            // Clear inputs
+            document.getElementById('originalUrl').value = '';
+            document.getElementById('customSlug').value = '';
+        }
+        
+        // QR Code Generator
+        function generateQR() {
+            const url = document.getElementById('qrUrl').value;
+            
+            if (!url) {
+                showError('Please enter a URL for the QR code');
+                return;
+            }
+            
+            generateQRCode(url, 'qr');
+            document.getElementById('qrUrl').value = '';
+        }
+        
+        function generateTextQR() {
+            const text = document.getElementById('qrText').value;
+            
+            if (!text.trim()) {
+                showError('Please enter some text');
+                return;
+            }
+            
+            generateQRCode(text, 'text');
+            document.getElementById('qrText').value = '';
+        }
+        
+        function generateQRCode(data, type) {
+            const qrCanvas = document.getElementById('qrCanvas');
+            qrCanvas.innerHTML = '';
+            
+            // Generate QR code
+            QRCode.toCanvas(qrCanvas, data, {
+                width: 280,
+                margin: 1,
                 color: {
-                    dark: '#000000',
-                    light: '#FFFFFF'
+                    dark: currentColor,
+                    light: currentBg
                 }
             }, function(error) {
                 if (error) {
-                    console.error(error);
+                    showError('Failed to generate QR code');
                     return;
                 }
                 
-                // Save to localStorage
-                let qrData = {
-                    id: id,
-                    data: data,
-                    timestamp: new Date().toISOString(),
-                    type: url ? 'url' : 'text'
-                };
+                // Save to storage
+                const item = StorageManager.addQR(data, type, currentColor, currentBg);
                 
-                savedCodes.unshift(qrData); // Add to beginning
-                localStorage.setItem('permanentQRCodes', JSON.stringify(savedCodes));
-                
-                // Update UI
-                showQR(qrData);
-                updateQRList();
-                
-                // Show QR section
-                document.getElementById('qrSection').style.display = 'block';
-                
-                // Generate permanent URL (uses URL hash)
-                let permanentUrl = window.location.origin + window.location.pathname + '#' + id;
-                document.getElementById('permanentUrl').textContent = permanentUrl;
-                
-                // Clear inputs
-                document.getElementById('urlInput').value = '';
-                document.getElementById('textInput').value = '';
+                // Display result with a short URL
+                const shortCode = generateShortCode();
+                const shortUrl = `qrpro.link/${shortCode}`;
+                showResult(item, shortUrl);
             });
         }
         
-        function showQR(qrData) {
-            let qrElement = document.getElementById('qrcode');
-            qrElement.innerHTML = '';
-            
-            QRCode.toCanvas(qrElement, qrData.data, {
-                width: 256,
-                margin: 2
-            });
-            
-            // Update permanent URL
-            let permanentUrl = window.location.origin + window.location.pathname + '#' + qrData.id;
-            document.getElementById('permanentUrl').textContent = permanentUrl;
-            
-            document.getElementById('qrSection').style.display = 'block';
+        function generateShortCode() {
+            return Math.random().toString(36).substring(2, 8);
         }
         
-        function updateQRList() {
-            let container = document.getElementById('savedQRCodes');
-            container.innerHTML = '';
+        function showResult(item, shortUrl) {
+            // Update display
+            document.getElementById('shortUrlDisplay').value = shortUrl;
+            document.getElementById('originalUrlDisplay').value = item.data;
+            document.getElementById('createdDate').textContent = new Date(item.created).toLocaleString();
+            document.getElementById('viewCount').textContent = item.views || 0;
+            document.getElementById('itemId').textContent = item.id.substring(0, 8);
             
-            if (savedCodes.length === 0) {
-                container.innerHTML = '<p>No QR codes generated yet.</p>';
-                return;
-            }
+            // Show results section
+            document.getElementById('resultsSection').style.display = 'block';
             
-            savedCodes.forEach(qrData => {
-                let div = document.createElement('div');
-                div.className = 'qr-item';
-                div.id = 'qr_' + qrData.id;
-                
-                // Create mini QR code
-                let canvas = document.createElement('canvas');
-                QRCode.toCanvas(canvas, qrData.data.substring(0, 100), {
-                    width: 80,
-                    margin: 1
-                });
-                
-                div.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        ${canvas.outerHTML}
-                        <div>
-                            <strong>${qrData.type === 'url' ? '🔗 URL' : '📝 Text'}</strong><br>
-                            <small>${qrData.data.substring(0, 50)}${qrData.data.length > 50 ? '...' : ''}</small><br>
-                            <small style="color: #666;">${new Date(qrData.timestamp).toLocaleDateString()}</small>
-                        </div>
-                    </div>
-                    <div>
-                        <button class="delete-btn" onclick="deleteQR('${qrData.id}')">🗑️ Delete</button>
-                    </div>
-                `;
-                
-                container.appendChild(div);
-            });
+            // Update stats and history
+            updateStats();
+            loadHistory();
+            
+            // Scroll to results
+            document.getElementById('resultsSection').scrollIntoView({ behavior: 'smooth' });
         }
         
-        function deleteQR(id) {
-            savedCodes = savedCodes.filter(qr => qr.id !== id);
-            localStorage.setItem('permanentQRCodes', JSON.stringify(savedCodes));
-            updateQRList();
+        function closeResults() {
+            document.getElementById('resultsSection').style.display = 'none';
+        }
+        
+        function copyToClipboard(elementId) {
+            const element = document.getElementById(elementId);
+            element.select();
+            element.setSelectionRange(0, 99999);
             
-            // If we're viewing this QR code, hide the QR section
-            if (window.location.hash === '#' + id) {
-                window.location.hash = '';
-                document.getElementById('qrSection').style.display = 'none';
-            }
+            navigator.clipboard.writeText(element.value).then(() => {
+                // Show temporary success
+                const btn = element.nextElementSibling;
+                const originalHTML = btn.innerHTML;
+                btn.innerHTML = '<i class="fas fa-check"></i> Copied!';
+                btn.classList.add('copied');
+                
+                setTimeout(() => {
+                    btn.innerHTML = originalHTML;
+                    btn.classList.remove('copied');
+                }, 2000);
+            });
         }
         
         function downloadQR() {
-            let canvas = document.querySelector('#qrcode canvas');
-            let link = document.createElement('a');
-            link.download = 'permanent-qr-code-' + Date.now() + '.png';
+            const canvas = document.getElementById('qrCanvas');
+            const link = document.createElement('a');
+            link.download = `qr-code-${Date.now()}.png`;
             link.href = canvas.toDataURL();
             link.click();
         }
         
         function shareQR() {
-            let canvas = document.querySelector('#qrcode canvas');
+            const canvas = document.getElementById('qrCanvas');
             canvas.toBlob(blob => {
                 if (navigator.share) {
                     navigator.share({
-                        title: 'My Permanent QR Code',
+                        title: 'My QR Code',
                         text: 'Scan this QR code',
                         files: [new File([blob], 'qr-code.png', { type: 'image/png' })]
                     });
                 } else {
-                    // Fallback for browsers that don't support Web Share API
-                    let link = document.createElement('a');
-                    link.href = canvas.toDataURL();
-                    link.download = 'qr-code.png';
-                    link.click();
+                    // Fallback: download
+                    downloadQR();
                 }
             });
         }
         
         function printQR() {
-            let canvas = document.querySelector('#qrcode canvas');
-            let printWindow = window.open('', '_blank');
+            const canvas = document.getElementById('qrCanvas');
+            const printWindow = window.open('', '_blank');
             printWindow.document.write(`
                 <html>
                     <head><title>Print QR Code</title></head>
                     <body style="text-align: center; padding: 50px;">
                         <img src="${canvas.toDataURL()}" style="max-width: 100%;">
+                        <p>QR Code generated with QRPro</p>
                         <script>
                             window.onload = function() {
                                 window.print();
@@ -407,31 +410,130 @@
             printWindow.document.close();
         }
         
-        // Load QR code from URL hash on page load
-        window.addEventListener('load', function() {
-            updateQRList();
+        function loadHistory() {
+            const filter = document.getElementById('filterType').value;
+            const items = StorageManager.getAllItems();
+            const historyList = document.getElementById('historyList');
             
-            // Check if there's a QR code ID in the URL hash
-            let hash = window.location.hash.substring(1);
-            if (hash && hash.startsWith('qr_')) {
-                let qrId = hash;
-                let qrData = savedCodes.find(qr => qr.id === qrId);
-                if (qrData) {
-                    showQR(qrData);
-                }
+            if (items.length === 0) {
+                historyList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-link-slash"></i>
+                        <h3>No links or QR codes yet</h3>
+                        <p>Create your first short URL or QR code above</p>
+                    </div>
+                `;
+                return;
             }
-        });
+            
+            let filteredItems = items;
+            if (filter !== 'all') {
+                filteredItems = items.filter(item => item.type === filter);
+            }
+            
+            historyList.innerHTML = filteredItems.map(item => `
+                <div class="history-item" data-id="${item.id}">
+                    <div class="item-icon">
+                        ${item.type === 'url' ? '<i class="fas fa-link"></i>' : 
+                          item.type === 'qr' ? '<i class="fas fa-qrcode"></i>' : 
+                          '<i class="fas fa-font"></i>'}
+                    </div>
+                    <div class="item-details">
+                        <div class="item-title">
+                            ${item.data.length > 60 ? item.data.substring(0, 60) + '...' : item.data}
+                        </div>
+                        <div class="item-meta">
+                            <span class="item-type">${item.type.toUpperCase()}</span>
+                            <span><i class="far fa-calendar"></i> ${new Date(item.created).toLocaleDateString()}</span>
+                            <span><i class="fas fa-eye"></i> ${item.views || 0} views</span>
+                        </div>
+                    </div>
+                    <div class="item-actions">
+                        <button class="btn-action-small" onclick="viewItem('${item.id}')" title="View">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn-action-small" onclick="deleteItem('${item.id}')" title="Delete">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `).join('');
+        }
         
-        // Update URL when generating new QR codes
-        window.addEventListener('hashchange', function() {
-            let hash = window.location.hash.substring(1);
-            if (hash && hash.startsWith('qr_')) {
-                let qrData = savedCodes.find(qr => qr.id === hash);
-                if (qrData) {
-                    showQR(qrData);
+        function viewItem(id) {
+            const item = StorageManager.getItem(id);
+            if (item) {
+                StorageManager.incrementViews(id);
+                
+                if (item.type === 'qr' || item.type === 'text') {
+                    // Regenerate QR code
+                    const qrCanvas = document.getElementById('qrCanvas');
+                    QRCode.toCanvas(qrCanvas, item.data, {
+                        width: 280,
+                        margin: 1,
+                        color: {
+                            dark: item.color || '#000000',
+                            light: item.bgColor || '#FFFFFF'
+                        }
+                    });
+                    
+                    const shortCode = generateShortCode();
+                    const shortUrl = `qrpro.link/${shortCode}`;
+                    showResult(item, shortUrl);
+                } else {
+                    // For URLs, just show the data
+                    showResult(item, item.shortUrl || `qrpro.link/${item.id.substring(0, 8)}`);
                 }
             }
-        });
+        }
+        
+        function deleteItem(id) {
+            if (confirm('Are you sure you want to delete this item?')) {
+                StorageManager.deleteItem(id);
+                loadHistory();
+                updateStats();
+            }
+        }
+        
+        function filterHistory() {
+            loadHistory();
+        }
+        
+        function updateStats() {
+            const items = StorageManager.getAllItems();
+            const urls = items.filter(item => item.type === 'url').length;
+            const qrs = items.filter(item => item.type === 'qr' || item.type === 'text').length;
+            
+            document.getElementById('totalLinks').textContent = urls;
+            document.getElementById('totalQRs').textContent = qrs;
+        }
+        
+        function exportData() {
+            const items = StorageManager.getAllItems();
+            const dataStr = JSON.stringify(items, null, 2);
+            const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+            
+            const exportFileDefaultName = `qrpro-backup-${new Date().toISOString().split('T')[0]}.json`;
+            
+            const linkElement = document.createElement('a');
+            linkElement.setAttribute('href', dataUri);
+            linkElement.setAttribute('download', exportFileDefaultName);
+            linkElement.click();
+        }
+        
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL your saved links and QR codes. This cannot be undone!')) {
+                localStorage.clear();
+                updateStats();
+                loadHistory();
+                closeResults();
+                showError('All data cleared successfully');
+            }
+        }
+        
+        function showError(message) {
+            alert(message);
+        }
     </script>
 </body>
 </html>
